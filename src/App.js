@@ -1,40 +1,33 @@
-import React from 'react';
 import './App.css';
+import React, { useEffect, useState } from 'react'
 
-class App extends React.Component {
+function App() {
+  const [name,setName]=useState("");
 
-  constructor(){
-    super();
-    this.state = {
-      users:null
-    }
-  }
-
-  componentDidMount(){
-    fetch('https://reqres.in/api/users').then((resp)=>{
-      resp.json().then(result=>{
-        console.warn(result.data)
-        this.setState({
-          users:result.data
-        })
+  function saveData(){
+    let data = {name}
+    console.warn('data',data)
+    fetch('http://127.0.0.1:5000/add_task',{
+      method:'POST',
+      headers:{
+        'Accept':'application/json',
+        'Content-Type':'application/json',
+      },
+      body:JSON.stringify(data)
+    }).then((resp)=>{
+      resp.json().then((result)=>{
+        console.warn('result',result)
       })
     })
   }
-  render() {
-    return(
-      <div className="App">
-        <h1>Fetch API Data</h1>
-        {
-          this.state.users ?
-          this.state.users.map((item,i)=>
-          <div><p>{i}--{item.first_name} {item.last_name}</p></div>
-          )
-          :
-          null
-        }
-      </div>
-    );
-  }
-}
 
+  return(
+    <div className='App'>
+      <h1>Post API</h1>
+      <input type='text' name='name' value={name} onChange={(e)=>{setName(e.target.value)}} /><br/>
+      <button type='button' onClick={saveData}>save new user</button>
+    </div>
+  )
+
+}
 export default App;
