@@ -1,33 +1,37 @@
 import './App.css';
-import React, { useEffect, useState } from 'react'
+import axios from "axios";
+import React from "react";
 
-function App() {
-  const [name,setName]=useState("");
+export default function App() {
+  const [users, setUsers] = React.useState(null);
+  const [name, setName] = React.useState(null);
 
-  function saveData(){
+  React.useEffect(() => {
+    axios.get('https://reqres.in/api/users').then((response) => {
+      setUsers(response.data);
+    });
+  }, []);
+
+  function createUser() {
     let data = {name}
-    console.warn('data',data)
-    fetch('http://127.0.0.1:5000/add_task',{
-      method:'POST',
-      headers:{
-        'Accept':'application/json',
-        'Content-Type':'application/json',
-      },
-      body:JSON.stringify(data)
-    }).then((resp)=>{
-      resp.json().then((result)=>{
-        console.warn('result',result)
+    axios
+      .post('https://reqres.in/api/users', {
+        name:data,
       })
-    })
+      .then((response) => {
+        setUsers(response.data);
+        console.log(users);
+      });
+      
   }
 
-  return(
-    <div className='App'>
-      <h1>Post API</h1>
-      <input type='text' name='name' value={name} onChange={(e)=>{setName(e.target.value)}} /><br/>
-      <button type='button' onClick={saveData}>save new user</button>
-    </div>
-  )
+  if (!users) return "No Users!"
 
+  return (
+    <div>
+      <p>created user: {name}</p>
+      <input type='text' name='name' value={name} onChange={(e)=>{setName(e.target.value)}} /><br/>
+      <button onClick={createUser}>Create User</button>
+    </div>
+  );
 }
-export default App;
